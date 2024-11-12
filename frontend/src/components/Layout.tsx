@@ -6,8 +6,8 @@ const Layout: React.FC = () => {
     <body>
       <nav>
         <span>Yago Pazos</span>
-              <div>
-                  <a href="/">Home</a>
+        <div>
+          <a href="/">Home</a>
           <a href="/about">About me</a>
           <a href="/prices">Prices</a>
           <a href="/booking">Booking</a>
