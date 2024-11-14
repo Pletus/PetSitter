@@ -57,8 +57,8 @@ export const userAppointments = asyncHandler(
       // Appointments
       return res.status(200).json(appointmentsResult.rows);
     } catch (error) {
-      console.error("Error al obtener las citas:", error);
-      return res.status(500).json({ error: "Error al obtener las citas" });
+      console.error("Error finding appointments:", error);
+      return res.status(500).json({ error: "Error finding appointments" });
     }
   }
 );
@@ -71,7 +71,8 @@ export const ownerAll = async (req: Request, res: Response) => {
           users.email, 
           users.phone, 
           appointments.service, 
-          appointments.date 
+          appointments.date,
+          appointments.start_time, 
         FROM appointments
         JOIN users ON appointments.user_id = users.id
         ORDER BY appointments.date DESC

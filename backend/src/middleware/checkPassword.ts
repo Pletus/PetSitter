@@ -6,6 +6,6 @@ export function checkPassword(req: Request, res: Response, next: NextFunction): 
     if (password && password === process.env.PROTECTED_PASSWORD) {
       next();
     } else {
-      res.status(403).json({ error: "Contraseña incorrecta" });
+      res.status(403).json({ error: "Wrong password" });
     }
   }

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { pool } from "../connect";
 import { asyncHandler } from "../middleware/asyncHandler";
 
-// Obtener todos los horarios disponibles
+// Get all availabilities
 export const getAvailability = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await pool.query(
@@ -12,7 +12,7 @@ export const getAvailability = asyncHandler(
   }
 );
 
-// Obtener todos los horarios disponibles para los próximos 60 días
+// Get all availabilities for the next 60 days
 
 // export const getAvailability = asyncHandler(
 //   async (req: Request, res: Response) => {
@@ -26,28 +26,28 @@ export const getAvailability = asyncHandler(
 //   }
 // );
 
-// Actualizar la disponibilidad (marcar como no disponible/disponible un horario específico)
+// Update availability
 export const updateAvailability = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
     const { is_available } = req.body;
 
-    // Validación de entrada
+    // Validation
     if (typeof is_available === "undefined") {
-      return res.status(400).json({ error: 'El campo "is_available" es requerido' });
+      return res.status(400).json({ error: 'Field "is_available" requiered' });
     }
 
-    // Realiza la actualización
+    // Update
     const result = await pool.query(
       "UPDATE availability SET is_available = $1 WHERE id = $2 RETURNING *",
       [is_available, id]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Horario no encontrado" });
+      return res.status(404).json({ error: "Availability not found" });
     }
 
-    return res.status(200).json({ message: "Horario actualizado correctamente", availability: result.rows[0] });
+    return res.status(200).json({ message: "Availability updated!", availability: result.rows[0] });
   }
 );
 

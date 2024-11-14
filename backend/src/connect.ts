@@ -19,7 +19,7 @@ export async function getPgVersion(): Promise<void> {
     const result = await client.query("SELECT version()");
     console.log(result.rows[0].version);
   } catch (err) {
-    console.error("Error ejecutando la consulta", err);
+    console.error("Error getting pg version", err);
   } finally {
     client.release();
   }
