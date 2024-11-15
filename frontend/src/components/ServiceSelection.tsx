@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 interface ServiceSelectionProps {
   services: string[];
@@ -6,12 +6,27 @@ interface ServiceSelectionProps {
 }
 
 const ServiceSelection: React.FC<ServiceSelectionProps> = ({ services, onSelect }) => {
+  const [selectedService, setSelectedService] = useState<string>("");
+
+  const handleSelect = (service: string) => {
+    setSelectedService(service);
+    onSelect(service); // Llamamos a la función onSelect pasada como prop
+  };
+
   return (
-    <div>
+    <div className="flex flex-col p-4">
       <h3>Select a service</h3>
-      <ul>
+      <ul className="space-y-2">
         {services.map((service, index) => (
-          <li key={index} onClick={() => onSelect(service)}>
+          <li
+            key={index}
+            onClick={() => handleSelect(service)}
+            className={`cursor-pointer p-2 rounded ${
+              selectedService === service
+                ? "bg-blue-500 text-white" // Resalta el servicio seleccionado
+                : "bg-gray-200"
+            }`}
+          >
             {service}
           </li>
         ))}
@@ -21,3 +36,4 @@ const ServiceSelection: React.FC<ServiceSelectionProps> = ({ services, onSelect 
 };
 
 export default ServiceSelection;
+

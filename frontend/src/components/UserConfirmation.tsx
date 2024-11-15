@@ -15,9 +15,9 @@ const UserConfirmation: React.FC<UserConfirmationProps> = ({ onConfirm }) => {
   };
 
   return (
-    <div>
-      <h3>Confirm your details</h3>
-      <form onSubmit={handleSubmit}>
+    <div className="p-4">
+      <h3 className="pl-2">Confirm your details</h3>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Name"
@@ -36,7 +36,7 @@ const UserConfirmation: React.FC<UserConfirmationProps> = ({ onConfirm }) => {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
-        <button type="submit">Confirm Appointment</button>
+        <button className="text-left pl-2" type="submit">Confirm Appointment</button>
       </form>
     </div>
   );
