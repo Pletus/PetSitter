@@ -10,14 +10,75 @@ const Booking: React.FC = () => {
     email: string;
     phone: string;
   } | null>(null);
+  const [selectedSlots, setSelectedSlots] = useState<{ [key: string]: string[] }>({});
+  const [appointmentStatus, setAppointmentStatus] = useState<string>("");
 
   const handleServiceSelect = (service: string) => {
     setSelectedService(service);
   };
 
-  const handleUserConfirm = (name: string, email: string, phone: string) => {
+  const handleUserConfirm = async (
+    name: string,
+    email: string,
+    phone: string
+  ) => {
     setUserDetails({ name, email, phone });
-    // Aquí podrías hacer una llamada a la API para guardar la cita en la base de datos
+
+    // Primero creamos el usuario
+    const userResponse = await fetch("http://localhost:5432/api/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, phone }),
+    });
+    const userData = await userResponse.json();
+
+    if (userData && userData.id) {
+      // Después de que el usuario se haya creado correctamente, procedemos a crear la cita
+      const appointmentResponse = await fetch("http://localhost:5432/api/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: userData.id,
+          service: selectedService,
+          date: new Date().toISOString(), // Usa la fecha correcta de la cita
+          status: "confirmed",
+          start_time: selectedSlots["dateKey"]?.[0], // Usa la hora seleccionada
+          end_time: selectedSlots["dateKey"]?.[1], // Usa la hora seleccionada
+        }),
+      });
+      const appointmentData = await appointmentResponse.json();
+
+      if (appointmentData && appointmentData.id) {
+        // Ahora actualizamos la disponibilidad
+        const availabilityUpdateResponse = await fetch(
+          `http://localhost:5432/api/availability/${appointmentData.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              is_available: false, // Marca la disponibilidad como no disponible
+            }),
+          }
+        );
+        const availabilityData = await availabilityUpdateResponse.json();
+
+        if (availabilityData.success) {
+          setAppointmentStatus("Cita confirmada y disponibilidad actualizada.");
+        } else {
+          setAppointmentStatus("Error al actualizar la disponibilidad.");
+        }
+      } else {
+        setAppointmentStatus("Error al crear la cita.");
+      }
+    } else {
+      setAppointmentStatus("Error al crear el usuario.");
+    }
   };
 
   const services = ["Walk", "Home care"];
@@ -25,14 +86,10 @@ const Booking: React.FC = () => {
   return (
     <div className="md:px-32 p-2 md:p-12 bg-violet-100 flex flex-col gap-12">
       <h2>Book your appointment</h2>
-      <BookingCalendar />
+      <BookingCalendar onSlotSelection={(slots) => setSelectedSlots(slots)} />
       <div className="flex md:flex-row justify-center gap-12 items-center">
         <ServiceSelection services={services} onSelect={handleServiceSelect} />
-        {
-          <>
-            <UserConfirmation onConfirm={handleUserConfirm} />
-          </>
-        }
+        <UserConfirmation onConfirm={handleUserConfirm} />
 
         {userDetails && (
           <div>
@@ -41,6 +98,7 @@ const Booking: React.FC = () => {
             <p>Name: {userDetails.name}</p>
             <p>Email: {userDetails.email}</p>
             <p>Phone: {userDetails.phone}</p>
+            {appointmentStatus && <p>{appointmentStatus}</p>}
           </div>
         )}
       </div>
