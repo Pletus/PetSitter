@@ -28,14 +28,6 @@ const BookingCalendarMonth: React.FC<BookingCalendarMonthProps> = ({
     [key: string]: Set<string>;
   }>({});
 
-  useEffect(() => {
-    // Recorre todas las fechas en el estado `selectedSlots` y propaga los cambios al padre
-    Object.keys(selectedSlots).forEach((date) => {
-      const slotsArray = Array.from(selectedSlots[date]);
-      onSlotChange(date, slotsArray); // Llama correctamente a la función con dos argumentos
-    });
-  }, [selectedSlots, onSlotChange]);
-
   const toggleSlotSelection = (date: string, time: string) => {
     setSelectedSlots((prevSelected) => {
       const newSelected = { ...prevSelected };
@@ -52,15 +44,25 @@ const BookingCalendarMonth: React.FC<BookingCalendarMonthProps> = ({
         newSelected[date].add(time);
       }
 
-      if (newSelected[date].size === 0) {
-        delete newSelected[date];
-      }
-
-      onSlotChange(date, Array.from(newSelected[date] || []));
-
       return newSelected;
     });
   };
+
+  // Solo llamamos a `onSlotChange` cuando los slots seleccionados cambian,
+  // y solo si la selección cambió realmente (evita actualizaciones redundantes).
+  useEffect(() => {
+    const newSlots = Object.keys(selectedSlots).reduce((acc, date) => {
+      acc[date] = Array.from(selectedSlots[date]);
+      return acc;
+    }, {} as { [key: string]: string[] });
+
+    // Verificamos que haya un cambio antes de llamar a `onSlotChange`
+    if (JSON.stringify(newSlots) !== JSON.stringify(selectedSlots)) {
+      Object.keys(newSlots).forEach((date) => {
+        onSlotChange(date, newSlots[date]);
+      });
+    }
+  }, [selectedSlots]); // Solo dependemos de selectedSlots
 
   const getDayName = (date: Date) => {
     const dayIndex = getDay(date);

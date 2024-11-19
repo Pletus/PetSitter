@@ -12,6 +12,7 @@ const Booking: React.FC = () => {
   } | null>(null);
   const [selectedSlots, setSelectedSlots] = useState<{ [key: string]: string[] }>({});
   const [appointmentStatus, setAppointmentStatus] = useState<string>("");
+  
 
   const handleServiceSelect = (service: string) => {
     setSelectedService(service);
