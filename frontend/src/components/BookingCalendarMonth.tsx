@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   format,
   addMonths,
@@ -28,6 +28,14 @@ const BookingCalendarMonth: React.FC<BookingCalendarMonthProps> = ({
     [key: string]: Set<string>;
   }>({});
 
+  useEffect(() => {
+    // Recorre todas las fechas en el estado `selectedSlots` y propaga los cambios al padre
+    Object.keys(selectedSlots).forEach((date) => {
+      const slotsArray = Array.from(selectedSlots[date]);
+      onSlotChange(date, slotsArray); // Llama correctamente a la función con dos argumentos
+    });
+  }, [selectedSlots, onSlotChange]);
+
   const toggleSlotSelection = (date: string, time: string) => {
     setSelectedSlots((prevSelected) => {
       const newSelected = { ...prevSelected };
@@ -44,12 +52,11 @@ const BookingCalendarMonth: React.FC<BookingCalendarMonthProps> = ({
         newSelected[date].add(time);
       }
 
-      const slotsArray = Array.from(newSelected[date] || []);
-      onSlotChange(date, slotsArray);
-
       if (newSelected[date].size === 0) {
         delete newSelected[date];
       }
+
+      onSlotChange(date, Array.from(newSelected[date] || []));
 
       return newSelected;
     });
@@ -100,9 +107,7 @@ const BookingCalendarMonth: React.FC<BookingCalendarMonthProps> = ({
                         key={slot}
                         onClick={() => toggleSlotSelection(dateKey, slot)}
                         className={`cursor-pointer p-1 text-center rounded ${
-                          selectedSlots[dateKey]?.has(slot)
-                            ? "bg-blue-300"
-                            : ""
+                          selectedSlots[dateKey]?.has(slot) ? "bg-blue-300" : ""
                         }`}
                       >
                         {slot}

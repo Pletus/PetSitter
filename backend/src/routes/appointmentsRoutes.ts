@@ -10,7 +10,7 @@ const router = express.Router();
 
 router
   .post("/appointments", newAppointment)
-  .get("/appointments", userAppointments)
+  .get("/appointments", userAppointments) // works but send query in the URL
   .get("/appointments/all", checkPassword, ownerAll);
 
 export default router;

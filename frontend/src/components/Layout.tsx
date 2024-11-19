@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 
 const Layout: React.FC = () => {
   return (
-    <body>
+    <>
       <nav>
         <span>Yago Pazos</span>
         <div>
@@ -14,7 +14,7 @@ const Layout: React.FC = () => {
         </div>
       </nav>
       <Outlet />
-    </body>
+    </>
   );
 };
 

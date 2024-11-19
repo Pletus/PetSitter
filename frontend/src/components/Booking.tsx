@@ -24,7 +24,6 @@ const Booking: React.FC = () => {
   ) => {
     setUserDetails({ name, email, phone });
 
-    // Primero creamos el usuario
     const userResponse = await fetch("http://localhost:5432/api/users", {
       method: "POST",
       headers: {
@@ -35,7 +34,6 @@ const Booking: React.FC = () => {
     const userData = await userResponse.json();
 
     if (userData && userData.id) {
-      // Después de que el usuario se haya creado correctamente, procedemos a crear la cita
       const appointmentResponse = await fetch("http://localhost:5432/api/appointments", {
         method: "POST",
         headers: {

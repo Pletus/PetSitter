@@ -11,9 +11,6 @@ interface BookingCalendarProps {
 
 const BookingCalendar: React.FC<BookingCalendarProps> = ({ onSlotSelection }) => {
   const [availability, setAvailability] = useState<{ [key: string]: string[] }>({});
-  const [selectedSlots, setSelectedSlots] = useState<{ [key: string]: string[] }>(
-    {}
-  );
 
   const fetchAvailability = async () => {
     try {
@@ -37,14 +34,11 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({ onSlotSelection }) =>
   };
 
   const handleSlotChange = (date: string, slots: string[]) => {
-    setSelectedSlots((prevSelected) => ({
-      ...prevSelected,
+    const updatedSlots = {
+      ...availability,
       [date]: slots,
-    }));
-    onSlotSelection({
-      ...selectedSlots,
-      [date]: slots,
-    });
+    };
+    onSlotSelection(updatedSlots); // Usamos el estado actualizado
   };
 
   useEffect(() => {

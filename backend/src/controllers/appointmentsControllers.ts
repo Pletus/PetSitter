@@ -4,9 +4,8 @@ import { asyncHandler } from "../middleware/asyncHandler";
 
 export const newAppointment = asyncHandler(
   async (req: Request, res: Response) => {
-    console.log("Request body:", req.body); // Log para depuración
 
-    const { email, service, date, start_time, end_time } = req.body;
+    const { email, service, date } = req.body;
     const userResult = await pool.query(
       "SELECT * FROM users WHERE email = $1",
       [email]
@@ -19,7 +18,7 @@ export const newAppointment = asyncHandler(
 
     const result = await pool.query(
       "INSERT INTO appointments (user_id, service, date) VALUES ($1, $2, $3) RETURNING *",
-      [user_id, service, date, start_time, end_time]
+      [user_id, service, date]
     );
     return res.status(201).json(result.rows[0]);
   }
